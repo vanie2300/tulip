@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cute Pink Tulip Garden</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        overflow: hidden;
+        position: relative;
+        width: 100vw;
+        height: 100dvh;
+        font-family: "Georgia", serif;
+        background:
+          radial-gradient(
+            circle at 80% 15%,
+            rgba(255, 182, 193, 0.3),
+            transparent 30%
+          ),
+          linear-gradient(
+            to bottom,
+            #1a0028 0%,
+            #3b0a4a 20%,
+            #6b2a6e 50%,
+            #c084b8 80%,
+            #e8c4d8 100%
+          );
+      }
+
+      .message {
+        position: absolute;
+        top: clamp(30px, 6vh, 60px);
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(36px, 9vw, 80px);
+        font-family: "Georgia", "Times New Roman", serif;
+        font-style: italic;
+        color: #fff5f7;
+        text-shadow:
+          0 0 10px #f9a8d4,
+          0 0 30px #ec4899,
+          0 0 60px rgba(236, 72, 153, 0.5);
+        z-index: 20;
+        white-space: nowrap;
+        letter-spacing: 4px;
+        animation: textFloat 3s ease-in-out infinite;
+      }
+
+      @keyframes textFloat {
+        0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.85; }
+        50% { transform: translateX(-50%) translateY(-8px); opacity: 1; text-shadow: 0 0 15px #f9a8d4, 0 0 50px #ec4899, 0 0 90px rgba(236, 72, 153, 0.6); }
+      }
+
+      .message-sub {
+        position: absolute;
+        top: clamp(75px, 14vh, 125px);
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(13px, 2.5vw, 22px);
+        font-family: "Georgia", "Times New Roman", serif;
+        font-style: italic;
+        color: #f9a8d4;
+        text-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+        z-index: 20;
+        white-space: nowrap;
+        letter-spacing: 6px;
+        opacity: 0.7;
+        animation: subFade 3s ease-in-out infinite;
+      }
+
+      @keyframes subFade {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 0.85; }
+      }
+
+      /* Envelope */
+      .envelope-wrap {
+        position: absolute;
+        top: clamp(140px, 20vh, 200px);
+        left: 50%;
+        transform: translateX(-50%) rotate(-3deg);
+        width: min(171px, 51vw);
+        height: 95px;
+        z-index: 15;
+      }
+
+      .envelope {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
+      .envelope-body {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #d946ef, #a855f7);
+        border-radius: 0 0 10px 10px;
+        z-index: 1;
+      }
+
+      .envelope-body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+        background: linear-gradient(135deg, #e879f9, #c084fc);
+        border-radius: 0 0 10px 10px;
+      }
+
+      .envelope-dot {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ef4444;
+        box-shadow: 0 0 8px rgba(239,68,68,0.6), 0 0 16px rgba(239,68,68,0.3);
+        z-index: 10;
+        animation: dotPulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes dotPulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(239,68,68,0.6), 0 0 16px rgba(239,68,68,0.3); }
+        50% { transform: scale(1.3); box-shadow: 0 0 12px rgba(239,68,68,0.8), 0 0 24px rgba(239,68,68,0.5); }
+      }
+
+      .flap {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 48px;
+        background: linear-gradient(135deg, #c084fc, #a855f7);
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        transform-origin: top;
+        transition: 1s ease;
+        z-index: 5;
+      }
+
+      .letter-box {
+        position: absolute;
+        left: 50%;
+        bottom: 8px;
+        transform: translateX(-50%) scale(0);
+        width: calc(100% - 24px);
+        height: 68px;
+        background: #fffdf7;
+        border-radius: 8px;
+        padding: 12px;
+        overflow: hidden;
+        z-index: 0;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: bottom 0.4s ease, transform 0.4s ease;
+      }
+
+      .letter-text {
+        color: #4a1942;
+        line-height: 1.4;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        font-size: 13px;
+        font-family: "Georgia", serif;
+      }
+
+      .open .flap {
+        transform: rotateX(180deg);
+      }
+
+      .open .letter-box {
+        bottom: 200px;
+        z-index: 20;
+        animation: letterZoom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      @keyframes letterZoom {
+        0% { transform: translateX(-50%) scale(0); opacity: 0; }
+        50% { transform: translateX(-50%) scale(1.7); opacity: 1; }
+        75% { transform: translateX(-50%) scale(1.5); }
+        100% { transform: translateX(-50%) scale(1.6); opacity: 1; box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
+      }
+
+      /* Letter overlay */
+      .letter-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .letter-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .letter-overlay-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+      }
+
+      .letter-overlay-box {
+        position: relative;
+        width: min(400px, 85vw);
+        max-height: 70vh;
+        background: #fffdf7;
+        border-radius: 16px;
+        padding: 32px 28px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+        transform-origin: center;
+        overflow-y: auto;
+      }
+
+      .letter-overlay.show .letter-overlay-box {
+        animation: overlayPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      .letter-overlay-text {
+        color: #4a1942;
+        font-size: clamp(15px, 2.5vw, 20px);
+        line-height: 1.7;
+        white-space: pre-wrap;
+        font-family: "Georgia", serif;
+      }
+
+      @keyframes overlayPop {
+        0% { transform: scale(0.3); opacity: 0; }
+        60% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      .hint {
+        position: absolute;
+        top: -30px;
+        width: 100%;
+        text-align: center;
+        font-size: clamp(11px, 2vw, 14px);
+        color: #f9a8d4;
+        text-shadow: 0 0 10px rgba(236, 72, 153, 0.3);
+        animation: hintFloat 2s ease-in-out infinite;
+        white-space: nowrap;
+      }
+
+      @keyframes hintFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+
+      /* Moon */
+      .moon {
+        position: absolute;
+        top: clamp(20px, 4vh, 60px);
+        right: clamp(16px, 6vw, 120px);
+        width: clamp(60px, 14vw, 120px);
+        height: clamp(60px, 14vw, 120px);
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #fff5f7, #f9a8d4);
+        box-shadow:
+          0 0 clamp(15px, 4vw, 30px) #fce7f3,
+          0 0 clamp(30px, 8vw, 60px) #f9a8d4,
+          0 0 clamp(60px, 16vw, 120px) #ec4899;
+      }
+
+      .moon::after {
+        content: "";
+        position: absolute;
+        inset: clamp(6px, 2vw, 15px);
+        border-radius: 50%;
+        background:
+          radial-gradient(
+            circle at 30% 30%,
+            rgba(255, 255, 255, 0.3),
+            transparent 15%
+          ),
+          radial-gradient(
+            circle at 70% 60%,
+            rgba(255, 182, 193, 0.2),
+            transparent 12%
+          );
+      }
+
+      /* Stars */
+      .star {
+        position: absolute;
+        border-radius: 50%;
+        background: #fce7f3;
+        animation: twinkle linear infinite;
+      }
+
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.2; transform: scale(0.6); }
+        50% { opacity: 1; transform: scale(1.5); }
+      }
+
+      /* Shooting Stars */
+      .shooting {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 0 15px white;
+      }
+
+      /* Fireflies */
+      .firefly {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #fbcfe8;
+        box-shadow:
+          0 0 8px #fbcfe8,
+          0 0 16px #f9a8d4,
+          0 0 30px #ec4899;
+        animation: fireflyMove ease-in-out infinite;
+      }
+
+      @keyframes fireflyMove {
+        0% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(calc(20px + 2vw), -30px) scale(1.2); }
+        50% { transform: translate(calc(-10px - 1vw), -70px) scale(0.9); }
+        75% { transform: translate(calc(25px + 3vw), -20px) scale(1.1); }
+        100% { transform: translate(0, 0) scale(1); }
+      }
+
+      /* Hearts */
+      .heart {
+        position: absolute;
+        font-size: clamp(14px, 3vw, 28px);
+        z-index: 15;
+        pointer-events: none;
+        animation: heartFloat ease-in-out infinite;
+        opacity: 0.7;
+      }
+
+      @keyframes heartFloat {
+        0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+        15% { opacity: 0.7; }
+        85% { opacity: 0.7; }
+        100% { transform: translateY(calc(-100vh - 100px)) rotate(20deg) scale(0.5); opacity: 0; }
+      }
+
+      /* Ground */
+      .ground {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: clamp(90px, 18vh, 160px);
+        background: linear-gradient(#6b2a6e, #3b0a4a);
+        z-index: 3;
+      }
+
+      /* Garden */
+      .garden {
+        position: absolute;
+        bottom: clamp(60px, 14vh, 120px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(92vw, 900px);
+        height: clamp(280px, 55vh, 500px);
+        max-height: 500px;
+      }
+
+      /* Flower */
+      .flower {
+        position: absolute;
+        bottom: 0;
+        transform-origin: bottom center;
+        animation: sway 6s ease-in-out infinite;
+      }
+
+      .flower:nth-child(1) {
+        left: 15%;
+      }
+
+      .flower:nth-child(2) {
+        left: 50%;
+        scale: 1.1;
+        animation-delay: 1.5s;
+      }
+
+      .flower:nth-child(3) {
+        left: 82%;
+        animation-delay: 3s;
+      }
+
+      @keyframes sway {
+        0%, 100% { transform: rotate(-3deg); }
+        50% { transform: rotate(3deg); }
+      }
+
+      /* Stem */
+      .stem {
+        width: clamp(6px, 1.2vw, 10px);
+        height: clamp(180px, 35vh, 280px);
+        max-height: 280px;
+        margin: auto;
+        border-radius: 20px;
+        background: linear-gradient(to bottom, #d8b4fe, #9333ea, #5b21b6);
+        position: relative;
+        box-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+      }
+
+      /* Leaves */
+      .leaf {
+        position: absolute;
+        width: clamp(50px, 14vw, 120px);
+        height: clamp(20px, 5vw, 45px);
+        background: linear-gradient(to right, #a855f7, #d8b4fe);
+        border-radius: 100% 0;
+        box-shadow: 0 0 clamp(6px, 2vw, 15px) rgba(216, 180, 254, 0.4);
+      }
+
+      .leaf.left {
+        left: clamp(-42px, -12vw, -105px);
+        top: clamp(50px, 12vh, 110px);
+        transform: rotate(-35deg);
+      }
+
+      .leaf.right {
+        right: clamp(-42px, -12vw, -105px);
+        top: clamp(85px, 20vh, 180px);
+        transform: rotate(145deg);
+      }
+
+      /* Bloom */
+      .bloom {
+        position: absolute;
+        top: clamp(-65px, -14vh, -115px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: clamp(80px, 18vw, 140px);
+        height: clamp(68px, 15vh, 120px);
+        filter: drop-shadow(0 0 clamp(4px, 1vw, 10px) rgba(147, 51, 234, 0.3));
+      }
+
+      /* Petals */
+      .petal {
+        position: absolute;
+        transform-origin: bottom center;
+        border-radius: 50% 50% 12% 12%;
+        animation: petalBreath 4s ease-in-out infinite;
+      }
+
+      @keyframes petalBreath {
+        0%, 100% { filter: brightness(1); }
+        50% { filter: brightness(1.15); }
+      }
+
+      /* Back petals */
+      .back {
+        width: clamp(28px, 6vw, 48px);
+        height: clamp(50px, 11vh, 90px);
+        background: linear-gradient(to bottom, #f5ecff, #d8b4fe, #9333ea);
+      }
+
+      /* Front petals */
+      .front {
+        width: clamp(32px, 7vw, 55px);
+        height: clamp(58px, 13vh, 105px);
+        background: linear-gradient(
+          to bottom,
+          #ffffff,
+          #f3e8ff,
+          #d8b4fe,
+          #9333ea
+        );
+      }
+
+      .back.left {
+        left: clamp(6px, 2vw, 18px);
+        top: clamp(5px, 1.5vh, 12px);
+        transform: rotate(-35deg);
+      }
+
+      .back.center {
+        left: clamp(24px, 5.5vw, 46px);
+      }
+
+      .back.right {
+        right: clamp(6px, 2vw, 18px);
+        top: clamp(5px, 1.5vh, 12px);
+        transform: rotate(35deg);
+      }
+
+      .front.left {
+        left: clamp(12px, 3vw, 24px);
+        top: clamp(8px, 2vh, 18px);
+        transform: rotate(-18deg);
+        z-index: 5;
+      }
+
+      .front.center {
+        left: clamp(22px, 5vw, 42px);
+        top: clamp(2px, 0.5vh, 6px);
+        z-index: 10;
+      }
+
+      .front.right {
+        right: clamp(12px, 3vw, 24px);
+        top: clamp(8px, 2vh, 18px);
+        transform: rotate(18deg);
+        z-index: 5;
+      }
+
+      /* Shine */
+      .petal::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: clamp(4px, 1.5vh, 10px);
+        transform: translateX(-50%);
+        width: clamp(4px, 1.2vw, 10px);
+        height: 60%;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 20px;
+        filter: blur(2px);
+      }
+
+      /* Glow pollen */
+      .pollen {
+        position: absolute;
+        left: 50%;
+        top: clamp(28px, 7vh, 55px);
+        width: clamp(6px, 1.2vw, 10px);
+        height: clamp(6px, 1.2vw, 10px);
+        border-radius: 50%;
+        background: #fff8b8;
+        transform: translateX(-50%);
+        box-shadow: 0 0 clamp(4px, 1vw, 8px) #fff8b8,
+          0 0 clamp(10px, 2.5vw, 20px) #fff8b8;
+      }
+
+      /* Tablet+ */
+      @media (min-width: 600px) {
+        .flower:nth-child(2) { scale: 1.15; }
+      }
+
+      @media (min-width: 1024px) {
+        .flower:nth-child(1) { left: 120px; }
+        .flower:nth-child(2) { left: 390px; scale: 1.15; }
+        .flower:nth-child(3) { left: 650px; right: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="moon"></div>
+    <div class="message">I'm so sorry</div>
+    <div class="message-sub">please forgive me</div>
+
+    <div class="envelope-wrap">
+      <div class="hint">Click the Envelope 💌</div>
+      <div class="envelope" id="envelope">
+        <div class="letter-box" id="letterBox">
+          <div class="letter-text" id="letterText"></div>
+        </div>
+        <div class="envelope-body"></div>
+        <div class="flap"></div>
+      </div>
+      <div class="envelope-dot"></div>
+    </div>
+
+    <div class="letter-overlay" id="letterOverlay">
+      <div class="letter-overlay-backdrop" id="overlayBackdrop"></div>
+      <div class="letter-overlay-box">
+        <div class="letter-overlay-text" id="overlayText"></div>
+      </div>
+    </div>
+
+    <div class="garden">
+      <div class="flower">
+        <div class="stem">
+          <div class="leaf left"></div>
+          <div class="leaf right"></div>
+
+          <div class="bloom">
+            <div class="petal back left"></div>
+            <div class="petal back center"></div>
+            <div class="petal back right"></div>
+
+            <div class="petal front left"></div>
+            <div class="petal front center"></div>
+            <div class="petal front right"></div>
+
+            <div class="pollen"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flower">
+        <div class="stem">
+          <div class="leaf left"></div>
+          <div class="leaf right"></div>
+
+          <div class="bloom">
+            <div class="petal back left"></div>
+            <div class="petal back center"></div>
+            <div class="petal back right"></div>
+
+            <div class="petal front left"></div>
+            <div class="petal front center"></div>
+            <div class="petal front right"></div>
+
+            <div class="pollen"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flower">
+        <div class="stem">
+          <div class="leaf left"></div>
+          <div class="leaf right"></div>
+
+          <div class="bloom">
+            <div class="petal back left"></div>
+            <div class="petal back center"></div>
+            <div class="petal back right"></div>
+
+            <div class="petal front left"></div>
+            <div class="petal front center"></div>
+
+            <div class="petal front right"></div>
+
+            <div class="pollen"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ground"></div>
+
+    <script>
+      function placeElements() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const stars = document.querySelectorAll(".star:not(.shooting)");
+        const flies = document.querySelectorAll(".firefly");
+
+        if (stars.length === 0) {
+          for (let i = 0; i < 200; i++) {
+            const star = document.createElement("div");
+            star.className = "star";
+            const size = Math.random() * 3 + 1;
+            star.style.width = size + "px";
+            star.style.height = size + "px";
+            star.style.left = Math.random() * w + "px";
+            star.style.top = Math.random() * h * 0.7 + "px";
+            star.style.animationDuration = 2 + Math.random() * 4 + "s";
+            document.body.appendChild(star);
+          }
+
+          for (let i = 0; i < 30; i++) {
+            const fly = document.createElement("div");
+            fly.className = "firefly";
+            fly.style.left = Math.random() * w + "px";
+            fly.style.top = (h - 300) + Math.random() * (h * 0.25) + "px";
+            fly.style.animationDuration = 4 + Math.random() * 6 + "s";
+            fly.style.animationDelay = Math.random() * 5 + "s";
+            document.body.appendChild(fly);
+          }
+        }
+      }
+
+      placeElements();
+
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(placeElements, 200);
+      });
+
+      /* Shooting stars */
+      function shootingStar() {
+        const star = document.createElement("div");
+        star.className = "shooting";
+        let x = Math.random() * window.innerWidth;
+        let y = -50;
+        star.style.left = x + "px";
+        star.style.top = y + "px";
+        document.body.appendChild(star);
+        const trail = [];
+        const move = setInterval(() => {
+          x -= 10;
+          y += 10;
+          star.style.left = x + "px";
+          star.style.top = y + "px";
+          const t = document.createElement("div");
+          t.style.position = "absolute";
+          t.style.width = "2px";
+          t.style.height = "2px";
+          t.style.background = "white";
+          t.style.opacity = ".4";
+          t.style.left = x + "px";
+          t.style.top = y + "px";
+          document.body.appendChild(t);
+          trail.push(t);
+          if (trail.length > 20) {
+            trail[0].remove();
+            trail.shift();
+          }
+          if (y > window.innerHeight) {
+            clearInterval(move);
+            star.remove();
+            trail.forEach((e) => e.remove());
+          }
+        }, 16);
+      }
+
+      setInterval(shootingStar, 2200);
+
+      /* Floating hearts */
+      const hearts = ["&#9829;", "&#10084;", "&#9825;"];
+      function spawnHeart() {
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+        h.style.left = Math.random() * 90 + 5 + "%";
+        h.style.bottom = "0";
+        h.style.animationDuration = 6 + Math.random() * 6 + "s";
+        h.style.animationDelay = Math.random() * 2 + "s";
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 14000);
+      }
+
+      for (let i = 0; i < 8; i++) setTimeout(spawnHeart, i * 1200);
+      setInterval(spawnHeart, 3000);
+
+      /* Envelope letter */
+      const envelopeEl = document.getElementById("envelope");
+      const letterOverlay = document.getElementById("letterOverlay");
+      const overlayText = document.getElementById("overlayText");
+      const overlayBackdrop = document.getElementById("overlayBackdrop");
+
+      const loveText = `I'm sorry. Not because
+I have to say it, but
+because I truly am.
+
+I hurt you, and that's
+on me.
+
+You mean so much to me,
+and I hate that I made
+you feel otherwise.
+
+I'm sorry.
+
+I love you. 💜`;
+
+      let envelopeOpened = false;
+      let typingInterval = null;
+
+      envelopeEl.addEventListener("click", () => {
+        if (envelopeOpened) return;
+        envelopeOpened = true;
+        envelopeEl.classList.add("open");
+
+        setTimeout(() => {
+          overlayText.textContent = "";
+          letterOverlay.classList.add("show");
+          let i = 0;
+          typingInterval = setInterval(() => {
+            overlayText.textContent += loveText.charAt(i);
+            i++;
+            if (i >= loveText.length) clearInterval(typingInterval);
+          }, 30);
+        }, 700);
+      });
+
+      function closeLetter() {
+        letterOverlay.classList.remove("show");
+        envelopeEl.classList.remove("open");
+        overlayText.textContent = "";
+        envelopeOpened = false;
+        if (typingInterval) { clearInterval(typingInterval); typingInterval = null; }
+      }
+
+      overlayBackdrop.addEventListener("click", closeLetter);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeLetter();
+      });
+    </script>
+  </body>
+</html>
